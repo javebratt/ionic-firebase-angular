@@ -13,6 +13,7 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { Party } from '../party.model';
+import { PartyService } from '../party.service';
 
 @Component({
   selector: 'app-create-party',
@@ -33,6 +34,7 @@ import { Party } from '../party.model';
   ],
 })
 export class CreatePartyComponent {
+  private readonly partyService = inject(PartyService);
   private readonly router = inject(Router);
 
   name?: string;
@@ -40,9 +42,11 @@ export class CreatePartyComponent {
   cost?: number;
   date?: Date;
 
-  async createEvent(party: Partial<Party>): Promise<void> {
-    // Save the party to the database
-    console.log(party);
-    await this.router.navigateByUrl('party');
+  createEvent(party: Partial<Party>): void {
+    party.revenue = 0;
+
+    this.partyService.createParty(party).subscribe(() => {
+      this.router.navigateByUrl('party');
+    });
   }
 }

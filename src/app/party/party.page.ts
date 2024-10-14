@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   IonContent,
@@ -14,8 +14,9 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Party } from './party.model';
+import { PartyService } from './party.service';
 
 @Component({
   selector: 'app-party',
@@ -37,7 +38,9 @@ import { Party } from './party.model';
   ],
 })
 export class PartyPage {
-  readonly partyList$: Observable<Party[]> = of([]);
+  private readonly partyService = inject(PartyService);
+
+  readonly partyList$: Observable<Party[]> = this.partyService.getPartyList();
 
   constructor() {
     addIcons({
