@@ -22,7 +22,6 @@ export class AuthenticationService {
   }
 
   login(email: string, password: string): Observable<UserCredential> {
-    console.log('login');
     return from(signInWithEmailAndPassword(this.auth, email, password));
   }
 
