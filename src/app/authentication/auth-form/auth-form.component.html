@@ -1,0 +1,29 @@
+<form [formGroup]="authForm">
+  <ion-input
+    formControlName="email"
+    type="email"
+    placeholder="Your email address"
+    label="Email:"
+    fill="outline"
+    helper-text="Please enter a valid email address"
+  />
+
+  @if(!isPasswordResetPage()) {
+  <ion-input
+    formControlName="password"
+    type="password"
+    placeholder="Your password"
+    label="Password:"
+    fill="outline"
+    helper-text="Please enter your password"
+  />
+  }
+
+  <ion-button
+    (click)="submitCredentials(authForm)"
+    expand="block"
+    [disabled]="!authForm.valid"
+  >
+    {{ actionButtonText() }}
+  </ion-button>
+</form>
