@@ -1,13 +1,29 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>party</ion-title>
+    <ion-title>Your Events</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">party</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <ion-content class="ion-padding">
+    @if (partyList$ | async; as partyList) {
+    <ion-list>
+      @for(party of partyList; track party) {
+      <ion-item tappable routerLink="/party/{{ party.id }}">
+        <ion-label>
+          <h2>{{party?.name}}</h2>
+          <p>Ticket: <strong>${{party?.ticketPrice}}</strong></p>
+          <p>Date: <strong>{{party?.date | date }}</strong></p>
+        </ion-label>
+      </ion-item>
+      }
+    </ion-list>
+    }
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button routerLink="/party/new">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </ion-content>
 </ion-content>

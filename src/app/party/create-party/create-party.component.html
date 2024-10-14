@@ -1,3 +1,49 @@
-<p>
-  create-party works!
-</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/party"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Add new Event</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-input
+    label="Event Name"
+    [(ngModel)]="name"
+    type="text"
+    placeholder="What's your event's name?"
+    fill="outline"
+  />
+
+  <ion-input
+    label="Price"
+    [(ngModel)]="ticketPrice"
+    type="number"
+    placeholder="How much will guests pay?"
+    fill="outline"
+  />
+
+  <ion-input
+    label="Cost"
+    [(ngModel)]="cost"
+    type="number"
+    placeholder="How much are you spending?"
+    fill="outline"
+  />
+
+  <ion-datetime
+    class="party-date"
+    size="fixed"
+    presentation="date"
+    [(ngModel)]="date"
+  />
+
+  <ion-button
+    [disabled]="!(name && ticketPrice && cost && date)"
+    expand="block"
+    (click)="createEvent({name, date, ticketPrice, cost})"
+  >
+    Create Event
+  </ion-button>
+</ion-content>
