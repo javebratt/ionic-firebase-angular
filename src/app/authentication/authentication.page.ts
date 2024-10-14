@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   IonBackButton,
   IonButton,
@@ -11,7 +11,9 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { Subscription, tap } from 'rxjs';
 import { AuthFormComponent } from './auth-form/auth-form.component';
+import { AuthenticationService } from './authentication.service';
 
 @Component({
   selector: 'app-authentication',
@@ -29,13 +31,15 @@ import { AuthFormComponent } from './auth-form/auth-form.component';
     CommonModule,
     FormsModule,
     AuthFormComponent,
+    RouterLink,
   ],
 })
-export class AuthenticationPage {
+export class AuthenticationPage implements OnDestroy {
   /**
    * We're injecting the router to get the current URL
    */
   private readonly router = inject(Router);
+  private readonly authenticationService = inject(AuthenticationService);
 
   /**
    * From the current URL, we're getting the last part
@@ -47,24 +51,21 @@ export class AuthenticationPage {
 
   /**
    * This object holds the configuration for the authentication page.
-   * It has the page title, action button text, and the method to call
+   * It has the page title and action button text for each page.
    * That way we don't need switch case or if/else to determine this values
    */
   readonly AUTH_PAGE_CONFIG = {
     login: {
       pageTitle: 'Sign In',
       actionButtonText: 'Sign In',
-      method: this.login,
     },
     signup: {
       pageTitle: 'Create your account',
       actionButtonText: 'Create Account',
-      method: this.signup,
     },
     reset: {
       pageTitle: 'Reset your password',
       actionButtonText: 'Reset Password',
-      method: this.resetPassword,
     },
   };
 
@@ -76,31 +77,53 @@ export class AuthenticationPage {
   readonly actionButtonText =
     this.AUTH_PAGE_CONFIG[this.currentPage].actionButtonText;
 
+  private activeSubscription?: Subscription;
+
   /**
    * This method gets the form value from the authentication component,
-   * then it uses our configuration object to call the respective method.
+   * then it calls the respective method.
    */
-  handleUserCredentials({ email, password }: UserCredentials) {
-    this.AUTH_PAGE_CONFIG[this.currentPage].method({ email, password });
+  handleUserCredentials(userCredentials: UserCredentials) {
+    switch (this.currentPage) {
+      case 'login':
+        this.login(userCredentials);
+        break;
+      case 'signup':
+        this.signup(userCredentials);
+        break;
+      case 'reset':
+        this.resetPassword(userCredentials);
+        break;
+    }
   }
 
-  // This will hold the logic for the login function.
   login({ email, password }: UserCredentials) {
-    console.log(email, password);
+    this.activeSubscription = this.authenticationService
+      .login(email, password)
+      .pipe(tap(() => this.router.navigateByUrl('')))
+      .subscribe();
   }
 
-  // This will hold the logic for the signup function.
   signup({ email, password }: UserCredentials) {
-    console.log(email, password);
+    this.activeSubscription = this.authenticationService
+      .signup(email, password)
+      .pipe(tap(() => this.router.navigateByUrl('')))
+      .subscribe();
   }
 
-  // This will hold the logic for the resetPassword function.
   resetPassword({ email }: UserCredentials) {
-    console.log(email);
+    this.activeSubscription = this.authenticationService
+      .resetPassword(email)
+      .pipe(tap(() => this.router.navigateByUrl('auth/login')))
+      .subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.activeSubscription?.unsubscribe();
   }
 }
 
 export interface UserCredentials {
   email: string;
-  password?: string;
+  password: string;
 }

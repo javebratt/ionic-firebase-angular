@@ -23,9 +23,12 @@ export class AuthFormComponent {
   formSubmitted = output<any>();
 
   readonly authForm: FormGroup = this.formBuilder.group({
-    email: ['', Validators.compose([Validators.required, Validators.email])],
+    email: [
+      'jorge@jorgevergara.co',
+      Validators.compose([Validators.required, Validators.email]),
+    ],
     password: [
-      '',
+      '1234567890-09876',
       Validators.compose([
         !this.isPasswordResetPage ? Validators.required : null,
         Validators.minLength(6),
